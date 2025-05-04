@@ -2,7 +2,7 @@
 
 A simple web application that uses AI to summarize and translate text.<br>
 
-![AI Text Tool Screenshot](./appimage.jpg)
+![AI Text Tool Screenshot](./appimage.png)
 
 
 This tool helps you:
