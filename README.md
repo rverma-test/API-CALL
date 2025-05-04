@@ -3,7 +3,7 @@
 
 You can view the deployed version of the app at the following link:
 
-[View the App](https://your-deployed-link.com)
+[View the App](https://frontend-api-zeta.vercel.app/)
 
 A simple web application that uses AI to summarize and translate text.<br>
 
