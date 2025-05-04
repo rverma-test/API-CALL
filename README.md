@@ -1,6 +1,7 @@
 # AI Text Tool
 
-A simple web application that uses AI to summarize and translate text.
+A simple web application that uses AI to summarize and translate text.<br>
+
 ![AI Text Tool Screenshot](./appimage.jpg)
 
 
