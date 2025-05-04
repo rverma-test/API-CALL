@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Text Tool</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="app-header">
+      <h1 class="app-title">AI Summarize/Translate</h1>
+      <p class="app-subtitle">Get your response</p>
+    </div>
+
+    <div class="input-section">
+      <textarea id="userText" placeholder="Enter your text here..."></textarea>
+    </div>
+
+    <div class="options-group">
+      <label class="checkbox-container">
+        <input type="checkbox" id="summarize-option">
+        <span class="custom-checkbox"></span>
+        <span class="checkbox-label">Summarize</span>
+      </label>
+      
+      <label class="checkbox-container">
+        <input type="checkbox" id="translate-option">
+        <span class="custom-checkbox"></span>
+        <span class="checkbox-label">Translate</span>
+      </label>
+    </div>
+
+    <div class="lang-input">
+      <label for="lang">Language (for translation):</label>
+      <input type="text" id="lang" placeholder="e.g. French, Spanish, German">
+    </div>
+
+    <div class="button-group">
+      <button id="processButton">
+        <i class="fas fa-magic"></i> Process Text
+      </button>
+    </div>
+
+    <div class="response-section">
+      <div class="response-header">
+        <h3 class="response-title">Response:</h3>
+      </div>
+      <div id="responseBox"></div>
+    </div>
+  </div>
+
+  <script>
+    // Wait for DOM to fully load
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get elements
+      const processButton = document.getElementById('processButton');
+      const translateOption = document.getElementById('translate-option');
+      const langInputDiv = document.querySelector('.lang-input');
+      
+      // Add event listener to button instead of using inline onclick
+      processButton.addEventListener('click', processText);
+      
+      // Show/hide language input based on translate checkbox
+      translateOption.addEventListener('change', function() {
+        langInputDiv.style.display = this.checked ? 'flex' : 'none';
+      });
+      
+      // Initialize language input visibility
+      langInputDiv.style.display = translateOption.checked ? 'flex' : 'none';
+    });
+    
+    // Define the processText function
+    async function processText() {
+      const userText = document.getElementById('userText').value.trim();
+      const language = document.getElementById('lang').value.trim();
+      const responseBox = document.getElementById('responseBox');
+      const summarizeChecked = document.getElementById('summarize-option').checked;
+      const translateChecked = document.getElementById('translate-option').checked;
+
+      if (!userText) {
+        responseBox.textContent = 'Please enter some text first.';
+        return;
+      }
+
+      if (!summarizeChecked && !translateChecked) {
+        responseBox.textContent = 'Please select at least one option (Summarize or Translate).';
+        return;
+      }
+
+      if (translateChecked && !language) {
+        responseBox.textContent = 'Please enter the language you want to translate to.';
+        return;
+      }
+
+      // Show loading indicator
+      responseBox.innerHTML = '<div class="loading"><div class="loading-spinner"></div></div>';
+
+      try {
+        const res = await fetch('http://localhost:4500/ask-ai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            text: userText,
+            summarize: summarizeChecked,
+            translate: translateChecked,
+            language: language
+          })
+        });
+
+        const data = await res.json();
+        if (data.response) {
+          // Use marked.js to render Markdown
+          responseBox.innerHTML = marked.parse(data.response);
+        } else {
+          responseBox.textContent = 'No response from AI.';
+        }
+      } catch (err) {
+        responseBox.textContent = 'Server Error';
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
